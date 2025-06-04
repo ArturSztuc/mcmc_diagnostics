@@ -1,0 +1,123 @@
+#!/usr/bin/env python3
+"""
+MCMC diagnostic tool
+
+This tool is used to diagnose the MCMC chains produced by Stan and Aria. It can be used to produce:
+1. Traces: to estimate the burn-in. Run without --burn-in to get the
+           trace plots for burn-in estimation.
+2. Autocorrelations: to estimate the autocorrelation length. You should run
+                     this after estimating the burn-in, and with --burn-in set
+                     to the burn-in value.
+3. Rhats: to estimate the convergence of the chains. You should run this after
+          estimating the burn-in, and with --burn-in set to the burn-in value.
+4. Split-posteriors: to visualize the posterior distributions split by
+                     different criteria (e.g., left/right side of individual
+                     chains, first/second half of chains by chain id). This is
+                     useful to check for convergence whether enough stats
+                     acquired e.g. for comparisons between the fitters
+"""
+
+import matplotlib
+import matplotlib.pyplot as plt
+import uproot
+
+matplotlib.use('Agg')
+
+matplotlib.rcParams['path.simplify'] = True
+matplotlib.rcParams['path.simplify_threshold'] = 1.0
+matplotlib.rcParams['agg.path.chunksize'] = 100000
+
+plt.style.use('fast')
+
+import diagnostics as dg
+
+N_BINS_SPLIT = 100
+N_BINS_XTRACE = 1000
+N_BINS_YTRACE = 100
+
+def get_files(directory, max_files=None):
+  import os
+  files = []
+  for file in os.listdir(directory):
+    if file.endswith(".root"):
+      
+      if max_files is not None and len(files) >= max_files:
+        break
+      
+      files.append(directory + file)
+  return files
+
+def parse_arguments():
+  import argparse
+  from argparse import RawTextHelpFormatter
+
+  parser = argparse.ArgumentParser(description=__doc__, formatter_class=RawTextHelpFormatter)
+  parser.add_argument("files", type=str, help="Directory with the chains")
+  parser.add_argument("--burn-in", type=int, default=0, help="Burn-in for the chains (default: 0)")
+  parser.add_argument("--max-lag", type=int, default=-1, help="Maximum lag for the autocorrelation")
+  parser.add_argument("--max-files", type=int, default=None, help="Maximum number of files run the diagnostics over")
+
+  parser.add_argument("--all", action="store_true", help="Create all the plots")
+  parser.add_argument("--traces", action="store_true", help="Create the trace plots")
+  parser.add_argument("--rhats", action="store_true", help="Create the Rhat matrix")
+  parser.add_argument("--autocorrelations", action="store_true", help="Create the autocorrelation plots")
+  parser.add_argument("--split-posterior", action="store_true", help="Create the split-posterior plots")
+
+  args = parser.parse_args()
+
+  if args.all:
+    args.traces = True
+    args.autocorrelations = True
+    args.rhats = True
+    args.split_posterior = True
+
+  return args
+
+if __name__ == "__main__":
+
+  # Get all the arguments
+  args = parse_arguments()
+
+  # Get the list of files to process
+  files = get_files(args.files, args.max_files)
+
+  metadata = dg.SamplerMetadata(files)
+
+  if args.max_lag == -1:
+    args.max_lag = metadata.get_default_maxlag()
+
+  metadata.print_metadata()
+
+  # Define the diagnostic actions to do. The keyword needs to be the same as the
+  # arg name (with - replaced by _)
+  task_actions = {
+    "traces": lambda: dg.make_trace_plots(metadata,
+                                          N_BINS_XTRACE,
+                                          N_BINS_YTRACE,
+                                          "trace_plots.pdf"),
+
+    "rhats": lambda: dg.make_rhat_plots(metadata, 
+                                        args.burn_in),
+
+    "autocorrelations": lambda: dg.make_autocorrelation_plots(metadata,
+                                                              args.max_lag,
+                                                              args.burn_in,
+                                                              "autocorrelation_plots.pdf"),
+
+    "split_posterior": lambda: dg.make_split_posteriors(metadata,
+                                                        N_BINS_SPLIT,
+                                                        args.burn_in,
+                                                        "split_posterior_plots.pdf")
+  }
+
+  # number of diagnostics to do
+  n_steps = sum([getattr(args, task) for task in task_actions])
+  step = 0
+
+  print(f"Running {n_steps} diagnostics: {', '.join([task for task in task_actions if getattr(args, task)])}")
+
+  # Execute the diagnostics
+  for task, action in task_actions.items():
+    if getattr(args, task):
+      print(f"Executing step {(step := step+1)}/{n_steps}: {task}")
+      action()

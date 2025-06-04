@@ -1,0 +1,8 @@
+uproot
+numpy
+matplotlib
+tqdm
+colorama
+argparse
+pandas
+seaborn
