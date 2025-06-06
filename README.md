@@ -1,6 +1,6 @@
 # mcmc_diagnostics
 
-A small package for running MCMC diagnostics on Aria and/or Stan chains. Can be used for:
+A small package for running MCMC diagnostics on Aria, Stan or MaCh3 (experimental) chains. Can be used for:
 
 1. Removing the burin-in
 2. Getting the effective sample size
@@ -32,7 +32,7 @@ For help, simply run
 
 ### Best practices for diagnostics
 
-The MCMC diagnostics should always be run in two stages, whether running on `Stan` or `Aria` MCMC chains:
+The MCMC diagnostics should always be run in two stages, whether running on `Stan`, `Aria` or `MaCh3` (experimental) MCMC chains:
 
 #### 1. Find the appropriate burn-in
 
