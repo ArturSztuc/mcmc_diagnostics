@@ -6,6 +6,9 @@ BRANCH_KEYWORDS_STAN = ["logprob", "Th13", "Th23", "dCP", "DmSq32"]
 IGNORE_BRANCHES_ARIA = ["MH", "stepnum"]
 BRANCHES_KEYWORDS_ARIA = ["logprob", "th13", "th23", "delta(pi)", "dmsq32"]
 
+IGNORE_BRANCHES_MACH3 = ["accProb", "step", "stepTime", "LogL_sample_0", "LogL_systematic_osc_cov", "LogL_systematic_xsec_cov"]
+BRANCHES_KEYWORDS_MACH3 = ["LogL", "sin2th_13", "sin2th_23", "delta_cp", "delm2_23", "sin2th_12", "delm2_12"]
+
 class SamplerMetadata:
     """
     Class to hold metadata for a sampler.
@@ -56,6 +59,8 @@ class SamplerMetadata:
             return 200
         elif self.sampler_name == "aria":
             return 20_000
+        elif self.sampler_name == "mach3":
+            return 40_000
         else:
             raise ValueError("Unknown sampler type. Please check the files.")
 
@@ -72,6 +77,11 @@ class SamplerMetadata:
                 self.ignored_branches = IGNORE_BRANCHES_ARIA
                 self.key_branches = BRANCHES_KEYWORDS_ARIA
                 self.ttree_location = "run/samples"
+            elif "posteriors":
+                self.sampler_name = "mach3"
+                self.ignored_branches = IGNORE_BRANCHES_MACH3
+                self.key_branches = BRANCHES_KEYWORDS_MACH3
+                self.ttree_location = "posteriors"
             else:
                 raise ValueError("Unknown sampler type. Please check the files.")
 
