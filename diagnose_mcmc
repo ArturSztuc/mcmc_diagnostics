@@ -37,6 +37,10 @@ N_BINS_YTRACE = 100
 
 def get_files(directory, max_files=None):
   import os
+
+  if not directory.endswith("/"):
+    directory += "/"
+
   files = []
   for file in os.listdir(directory):
     if file.endswith(".root"):
