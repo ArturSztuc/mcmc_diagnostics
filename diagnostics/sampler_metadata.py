@@ -72,16 +72,19 @@ class SamplerMetadata:
                 self.ignored_branches = IGNORE_BRANCHES_STAN
                 self.key_branches = BRANCH_KEYWORDS_STAN
                 self.ttree_location = "samples/samples"
+                self.perfect_acceptance = 100.0
             elif "run/samples" in f:
                 self.sampler_name = "aria"
                 self.ignored_branches = IGNORE_BRANCHES_ARIA
                 self.key_branches = BRANCHES_KEYWORDS_ARIA
                 self.ttree_location = "run/samples"
+                self.perfect_acceptance = 23.4
             elif "posteriors":
                 self.sampler_name = "mach3"
                 self.ignored_branches = IGNORE_BRANCHES_MACH3
                 self.key_branches = BRANCHES_KEYWORDS_MACH3
                 self.ttree_location = "posteriors"
+                self.perfect_acceptance = 23.4
             else:
                 raise ValueError("Unknown sampler type. Please check the files.")
 
