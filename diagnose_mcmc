@@ -69,12 +69,12 @@ def parse_arguments():
 
   args = parser.parse_args()
 
+  args.step_acceptance = True
   if args.all:
     args.traces = True
     args.autocorrelations = True
     args.rhats = True
     args.split_posterior = True
-    args.step_acceptance = True
 
   return args
 
