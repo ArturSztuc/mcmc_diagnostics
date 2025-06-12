@@ -74,6 +74,7 @@ def parse_arguments():
     args.autocorrelations = True
     args.rhats = True
     args.split_posterior = True
+    args.step_acceptance = True
 
   return args
 
@@ -95,6 +96,8 @@ if __name__ == "__main__":
   # Define the diagnostic actions to do. The keyword needs to be the same as the
   # arg name (with - replaced by _)
   task_actions = {
+    "step_acceptance": lambda: dg.print_step_acceptance(metadata),
+
     "traces": lambda: dg.make_trace_plots(metadata,
                                           N_BINS_XTRACE,
                                           N_BINS_YTRACE,
