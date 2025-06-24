@@ -103,6 +103,11 @@ def get_autocorrelations(metadata, max_lag=100, burn_in=0):
   for filename in tqdm(metadata.files, desc="Getting autocorrelations"):
     chain = uproot.open(filename)[metadata.ttree_location]
 
+    if max_lag > chain.num_entries - burn_in:
+        raise ValueError(f"Max lag ({max_lag}) is larger than the number of"\
+                         f"(MCMC steps - burn-in) ({chain.num_entries - burn_in}) in file"\
+                         f" {filename}. Please reduce max_lag, or provide larger chains.")
+
     # Add the autocorrelations to the total for each key
     for key in keys:
       data = np.asarray(chain[key].array()[burn_in:])
