@@ -6,7 +6,7 @@ BRANCH_KEYWORDS_STAN = ["logprob", "Th13", "Th23", "dCP", "DmSq32"]
 IGNORE_BRANCHES_ARIA = ["MH", "stepnum"]
 BRANCHES_KEYWORDS_ARIA = ["logprob", "th13", "th23", "delta(pi)", "dmsq32"]
 
-IGNORE_BRANCHES_MACH3 = ["accProb", "step", "stepTime", "LogL_sample_0", "LogL_systematic_osc_cov", "LogL_systematic_xsec_cov"]
+IGNORE_BRANCHES_MACH3 = ["accProb", "step", "stepTime", "LogL_sample_0", "LogL_sample_1", "LogL_systematic_osc_cov", "LogL_systematic_xsec_cov"]
 BRANCHES_KEYWORDS_MACH3 = ["LogL", "sin2th_13", "sin2th_23", "delta_cp", "delm2_23", "sin2th_12", "delm2_12"]
 
 class SamplerMetadata:
